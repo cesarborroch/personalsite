@@ -1,0 +1,99 @@
+<html>
+<header>
+<title>SP Example</title>
+</header>
+<body style='color:#55cc66;background:#001800;'>
+<pre style='color:#55cc66;background:#001800;'><span style='color:#508050; font-weight:bold; '>DROP</span> <span style='color:#508050; font-weight:bold; '>PROCEDURE</span> <span style='color:#508050; font-weight:bold; '>IF</span> <span style='color:#508050; font-weight:bold; '>EXISTS</span> T034_round02<span style='color:#800080; '>;</span>
+DELIMITER <span style='color:#ffffff; background:#dd0000; font-weight:bold; font-style:italic; '>/</span><span style='color:#ffffff; background:#dd0000; font-weight:bold; font-style:italic; '>/</span>
+<span style='color:#508050; font-weight:bold; '>CREATE</span> <span style='color:#508050; font-weight:bold; '>PROCEDURE</span> T034_round02 <span style='color:#800080; '>(</span>p_ID_PROGRA <span style='color:#bb7977; '>INTEGER</span><span style='color:#808030; '>(</span><span style='color:#778c77; '>5</span><span style='color:#808030; '>)</span><span style='color:#800080; '>,</span> p_ID_CALL <span style='color:#bb7977; '>INTEGER</span><span style='color:#808030; '>(</span><span style='color:#778c77; '>4</span><span style='color:#808030; '>)</span><span style='color:#800080; '>,</span> p_NR_ROUND <span style='color:#bb7977; '>INTEGER</span><span style='color:#808030; '>(</span><span style='color:#778c77; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>)</span>
+DETERMINISTIC
+QUIT:<span style='color:#508050; font-weight:bold; '>BEGIN</span>
+
+<span style='color:#b96969; '>/* PROCEDURE VARIABLES */</span>
+DECLARE v_ID_STUFIN <span style='color:#bb7977; '>INTEGER</span> <span style='color:#477766; '>DEFAULT</span> <span style='color:#778c77; '>0</span><span style='color:#800080; '>;</span> <span style='color:#b96969; '>/* STUDENT CURSOR */</span>
+DECLARE v_ID_STUDEN <span style='color:#bb7977; '>INTEGER</span> <span style='color:#477766; '>DEFAULT</span> <span style='color:#778c77; '>0</span><span style='color:#800080; '>;</span> <span style='color:#b96969; '>/* STUDENT ID     */</span>
+DECLARE v_VL_MINSCO <span style='color:#bb7977; '>DECIMAL</span><span style='color:#808030; '>(</span><span style='color:#778c77; '>3</span><span style='color:#800080; '>,</span><span style='color:#778c77; '>2</span><span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>      <span style='color:#b96969; '>/* MINIMUN SCORE */</span>
+
+<span style='color:#b96969; '>/* CURSOR FOR ALL STUDENTS WITHOUT ASSESSMENT */</span>
+DECLARE cur CURSOR <span style='color:#508050; font-weight:bold; '>FOR</span>
+    <span style='color:#508050; font-weight:bold; '>SELECT</span>
+        T022_ID_STUDENT
+    <span style='color:#508050; font-weight:bold; '>FROM</span>
+        T022
+    <span style='color:#508050; font-weight:bold; '>WHERE</span>
+        T022_ID_CALL <span style='color:#808030; '>=</span> p_ID_CALL
+    <span style='color:#808030; '>AND</span> T022_VL_ASSESS <span style='color:#508050; font-weight:bold; '>IS</span> <span style='color:#808030; '>NULL</span><span style='color:#800080; '>;</span>
+
+<span style='color:#b96969; '>/* CURSOR FOR STUDENT/CALL FOR SUBMIT */</span>
+DECLARE cur2 CURSOR <span style='color:#508050; font-weight:bold; '>FOR</span>
+    <span style='color:#508050; font-weight:bold; '>SELECT</span>
+        T022_ID_STUDENT
+    <span style='color:#508050; font-weight:bold; '>FROM</span>
+        T022
+    <span style='color:#508050; font-weight:bold; '>WHERE</span>
+        T022_ID_CALL <span style='color:#808030; '>=</span> p_ID_CALL
+    <span style='color:#808030; '>AND</span> <span style='color:#508050; font-weight:bold; '>EXISTS</span> <span style='color:#808030; '>(</span>
+        <span style='color:#508050; font-weight:bold; '>SELECT</span>
+            <span style='color:#808030; '>NULL</span>
+        <span style='color:#508050; font-weight:bold; '>FROM</span>
+            T021
+        <span style='color:#508050; font-weight:bold; '>WHERE</span>
+            T021_ID_CALL   <span style='color:#808030; '>=</span> T022_ID_CALL
+        <span style='color:#808030; '>AND</span> T021_ID_STUDEN <span style='color:#808030; '>=</span> T022_ID_STUDENT
+        <span style='color:#808030; '>AND</span> T021_NR_PRIORI <span style='color:#808030; '>=</span> p_NR_ROUND
+        <span style='color:#808030; '>AND</span> T021_ID_STATUS <span style='color:#808030; '>=</span> <span style='color:#778c77; '>2</span> <span style='color:#b96969; '>/* 2 = APPROVED */</span>
+    <span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+
+DECLARE CONTINUE HANDLER <span style='color:#508050; font-weight:bold; '>FOR</span> <span style='color:#808030; '>NOT</span> FOUND <span style='color:#508050; font-weight:bold; '>SET</span> v_ID_STUFIN <span style='color:#808030; '>=</span> <span style='color:#778c77; '>1</span><span style='color:#800080; '>;</span>
+
+<span style='color:#b96969; '>/* DECLASSIFICATION FOR LOW SCORE */</span>
+<span style='color:#508050; font-weight:bold; '>IF</span> <span style='color:#808030; '>(</span>p_NR_ROUND <span style='color:#808030; '>=</span> <span style='color:#778c77; '>1</span><span style='color:#808030; '>)</span> <span style='color:#508050; font-weight:bold; '>THEN</span>
+    <span style='color:#b96969; '>/* RETRIEVES THE MINIMUN SCORE */</span>
+    <span style='color:#508050; font-weight:bold; '>SELECT</span>
+        T002_VL_MINSCO
+    <span style='color:#508050; font-weight:bold; '>INTO</span>
+        v_VL_MINSCO
+    <span style='color:#508050; font-weight:bold; '>FROM</span>
+        T002
+    <span style='color:#508050; font-weight:bold; '>WHERE</span>
+        T002_ID_PROGRA <span style='color:#808030; '>=</span> p_ID_PROGRA<span style='color:#800080; '>;</span>
+
+    <span style='color:#508050; font-weight:bold; '>OPEN</span> cur<span style='color:#800080; '>;</span>
+    l_LP_STUDEN: LOOP
+        FETCH cur <span style='color:#508050; font-weight:bold; '>INTO</span> v_ID_STUDEN<span style='color:#800080; '>;</span>
+
+        <span style='color:#508050; font-weight:bold; '>IF</span> v_ID_STUFIN <span style='color:#808030; '>=</span> <span style='color:#778c77; '>1</span> <span style='color:#508050; font-weight:bold; '>THEN</span>
+            LEAVE l_LP_STUDEN<span style='color:#800080; '>;</span>
+        <span style='color:#508050; font-weight:bold; '>END</span> <span style='color:#508050; font-weight:bold; '>IF</span><span style='color:#800080; '>;</span>
+
+        <span style='color:#b96969; '>/* COMPUTES THIS STUDENT IN PARTICULAR */</span>
+        CALL T034_round03<span style='color:#808030; '>(</span>p_ID_CALL<span style='color:#800080; '>,</span> v_VL_MINSCO<span style='color:#800080; '>,</span> v_ID_STUDEN<span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+
+    <span style='color:#508050; font-weight:bold; '>END</span> LOOP l_LP_STUDEN<span style='color:#800080; '>;</span>
+    CLOSE cur<span style='color:#800080; '>;</span>
+
+<span style='color:#508050; font-weight:bold; '>END</span> <span style='color:#508050; font-weight:bold; '>IF</span><span style='color:#800080; '>;</span>
+
+<span style='color:#b96969; '>/* RESETS THE HANDLER, MYSQL REQUIREMENT */</span>
+<span style='color:#508050; font-weight:bold; '>SET</span> v_ID_STUFIN <span style='color:#808030; '>=</span> <span style='color:#778c77; '>0</span><span style='color:#800080; '>;</span>
+
+<span style='color:#508050; font-weight:bold; '>OPEN</span> cur2<span style='color:#800080; '>;</span>
+l_LP_STUDEN2: LOOP
+     FETCH cur2 <span style='color:#508050; font-weight:bold; '>INTO</span> v_ID_STUDEN<span style='color:#800080; '>;</span>
+
+    <span style='color:#508050; font-weight:bold; '>IF</span> v_ID_STUFIN <span style='color:#808030; '>=</span> <span style='color:#778c77; '>1</span> <span style='color:#508050; font-weight:bold; '>THEN</span>
+        LEAVE l_LP_STUDEN2<span style='color:#800080; '>;</span>
+    <span style='color:#508050; font-weight:bold; '>END</span> <span style='color:#508050; font-weight:bold; '>IF</span><span style='color:#800080; '>;</span>
+
+    <span style='color:#b96969; '>/* COMPUTES THIS STUDENT IN PARTICULAR */</span>
+    CALL T034_round04<span style='color:#808030; '>(</span>p_ID_PROGRA<span style='color:#800080; '>,</span> p_ID_CALL<span style='color:#800080; '>,</span> p_NR_ROUND<span style='color:#800080; '>,</span> v_ID_STUDEN<span style='color:#808030; '>)</span><span style='color:#800080; '>;</span>
+
+<span style='color:#508050; font-weight:bold; '>END</span> LOOP l_LP_STUDEN2<span style='color:#800080; '>;</span>
+CLOSE cur2<span style='color:#800080; '>;</span>
+
+<span style='color:#508050; font-weight:bold; '>END</span> <span style='color:#ffffff; background:#dd0000; font-weight:bold; font-style:italic; '>/</span><span style='color:#ffffff; background:#dd0000; font-weight:bold; font-style:italic; '>/</span>
+DELIMITER <span style='color:#800080; '>;</span>
+</pre>
+<!--Created using ToHtml.com on 2019-11-08 20:08:20 UTC -->
+</body>
+</html>

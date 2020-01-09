@@ -1,0 +1,128 @@
+<html>
+<header>
+<title>Model Example</title>
+</header>
+<body style="background: rgb(248, 248, 248)">
+
+<pre class="hljs" style="display: block; overflow-x: auto; padding: 0.5em; color: rgb(51, 51, 51); background: rgb(248, 248, 248) none repeat scroll 0% 0%;"><span class="hljs-meta" style="font-weight: 700; color: rgb(153, 153, 153);">&lt;?php</span>
+<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>(!defined(<span class="hljs-string" style="color: rgb(221, 17, 68);">'BASEPATH'</span>)) <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">exit</span>(<span class="hljs-string" style="color: rgb(221, 17, 68);">'No direct script access allowed'</span>);
+
+<span class="hljs-class"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">class</span> <span class="hljs-title" style="color: rgb(68, 85, 136); font-weight: 700;">course_model</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">extends</span> <span class="hljs-title" style="color: rgb(68, 85, 136); font-weight: 700;">MY_Model</span> </span>{
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">private</span> $table_name = <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014'</span>;
+
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_ID_COURSE Course ID</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_NM_COURSE Course name</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_CH_SHIFT  Course shift: (M)orning, (A)fternoon, (N)ight</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_ID_EXTERN External ID</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_QT_HRLOAD Qty hours course load</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_QT_MNLOAD Minimun qty hours course load</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_QT_MXLOAD Minimun qty hours course load</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_CH_PERIOD Periodization: (S)emester, (Y)ear</span>
+    <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// T014_QT_RESIDE Permanency period in hours</span>
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">get_all_courses</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;select(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE, T014_NM_COURSE, T014_CH_SHIFT, T014_ID_COORD, T014_ID_EXTERN'</span>);
+        $query = <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;get(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> $query-&gt;num_rows() ? $query-&gt;result_array() : <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">null</span>;
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">get_course</span><span class="hljs-params">($T014_ID_COURSE)</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;select(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE, T014_ID_COORD, T014_ID_EXTERN, T014_NM_COURSE, T014_CH_SHIFT, T014_QT_HRLOAD, T014_QT_MNLOAD, T014_QT_MXLOAD, T014_CH_PERIOD, T014_QT_RESIDE'</span>);
+        $query = <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;get_where(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">array</span>(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE'</span> =&gt; $T014_ID_COURSE));
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> $query-&gt;num_rows() ? $query-&gt;row_array() : <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">false</span>;
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">get_cursos</span><span class="hljs-params">($search_term = null, $offset = <span class="hljs-number" style="color: teal;">0</span>)</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;select(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE, T013_NM_COORD, T014_NM_COURSE, T014_ID_EXTERN, T014_CH_SHIFT, T014_CH_PERIOD, T014_QT_RESIDE, T014_DT_INSERT, T014_DT_UPDATE, T003_NM_USER'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;join(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T013'</span>, <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COORD = T013_ID_COORD'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;join(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T003'</span>, <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_USRALT = T003_ID_USER'</span>);
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>($search_term) {
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T013_NM_COORD'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_NM_COURSE'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_EXTERN'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T003_NM_USER'</span>, $search_term);
+        }
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;order_by(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T013_NM_COORD, T014_NM_COURSE'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;limit(LIMIT_RESULTSET, intval($offset));
+
+        $query = <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;get(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> $query-&gt;num_rows() ? $query-&gt;result_array() : <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">array</span>();
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">get_qtde_cursos</span><span class="hljs-params">($search_term = null)</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;from(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;join(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T013'</span>, <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COORD = T013_ID_COORD'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;join(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T003'</span>, <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_USRALT = T003_ID_USER'</span>);
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>($search_term) {
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T013_NM_COORD'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_NM_COURSE'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_EXTERN'</span>, $search_term);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;or_like(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T003_NM_USER'</span>, $search_term);
+        }
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;count_all_results();
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">cadastrar</span><span class="hljs-params">($T014_ID_COURSE, $T014_ID_COORD, $T014_ID_EXTERN, $T014_NM_COURSE, $T014_CH_SHIFT, $T014_QT_HRLOAD, $T014_QT_MNLOAD, $T014_QT_MXLOAD, $T014_CH_PERIOD, $T014_QT_RESIDE, $ID_USER)</span> </span>{
+        $fields = <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">array</span>(
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COORD'</span>  =&gt; $T014_ID_COORD ,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_EXTERN'</span> =&gt; $T014_ID_EXTERN,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_NM_COURSE'</span> =&gt; $T014_NM_COURSE,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_CH_SHIFT'</span>  =&gt; $T014_CH_SHIFT ,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_QT_HRLOAD'</span> =&gt; $T014_QT_HRLOAD,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_QT_MNLOAD'</span> =&gt; $T014_QT_MNLOAD,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_QT_MXLOAD'</span> =&gt; $T014_QT_MXLOAD,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_CH_PERIOD'</span> =&gt; $T014_CH_PERIOD,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_QT_RESIDE'</span> =&gt; $T014_QT_RESIDE,
+            <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_USRALT'</span> =&gt; $ID_USER
+        );
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;set($fields);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;set(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_DT_UPDATE'</span>, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;now, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">false</span>);
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>($T014_ID_COURSE) {
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;where(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE'</span>, $T014_ID_COURSE);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;update(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+        }
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">else</span> {
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;set(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE'</span>, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;next_id(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name, <span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE'</span>));
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;set(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_USRINS'</span>, $ID_USER);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;set(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_DT_INSERT'</span>, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;now, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">false</span>);
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;insert(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+        }
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">can_delete</span><span class="hljs-params">($T014_ID_COURSE)</span> </span>{
+        <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// Can not delete course if there are students on it</span>
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;from(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T017'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;where(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T017_ID_COURSE'</span> =&gt; $T014_ID_COURSE);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;count_all_results());
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">false</span>;
+
+        <span class="hljs-comment" style="color: rgb(153, 153, 136); font-style: italic;">// Can not delete course if it is inserted in an agreement</span>
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;from(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T035'</span>);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;where(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T035_ID_COURSE'</span> =&gt; $T014_ID_COURSE);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">if</span>(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;count_all_results());
+            <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">false</span>;
+
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">true</span>;
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">delete</span><span class="hljs-params">($T014_ID_COURSE)</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;delete(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name, <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">array</span>(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_COURSE'</span> =&gt; $T014_ID_COURSE));
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;affected_rows();
+    }
+
+    <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">public</span> <span class="hljs-function"><span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">function</span> <span class="hljs-title" style="color: rgb(153, 0, 0); font-weight: 700;">course_exist</span><span class="hljs-params">($T014_ID_EXTERN)</span> </span>{
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;from(<span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;table_name);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;where(<span class="hljs-string" style="color: rgb(221, 17, 68);">'T014_ID_EXTERN'</span> =&gt; $T014_ID_EXTERN);
+        <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">return</span> <span class="hljs-keyword" style="color: rgb(51, 51, 51); font-weight: 700;">$this</span>-&gt;db-&gt;count_all_results() &gt; <span class="hljs-number" style="color: teal;">0</span>;
+    }
+}</pre>
+
+</body>
+</html>
